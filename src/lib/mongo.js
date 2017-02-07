@@ -4,12 +4,17 @@ var async = require('async');
 
 var localhost = '127.0.0.1'; //Can access mongo as localhost from a sidecar
 
-var getDb = function(host, done) {
+var getDb = function(host, options, done) {
   //If they called without host like getDb(function(err, db) { ... });
-  if (arguments.length === 1) {
+  if (arguments.length <= 2) {
     if (typeof arguments[0] === 'function') {
       done = arguments[0];
       host = localhost;
+      options = {};
+    } else if (typeof arguments[1] === 'function') {
+      done = arguments[1];
+      host = artuments[0];
+      options = {};
     }
     else {
       throw new Error('getDb illegal invocation. User either getDb(\'hostAddr\', function(err, db) { ... }) OR getDb(function(err, db) { ... })');
@@ -17,7 +22,8 @@ var getDb = function(host, done) {
   }
 
   host = host || localhost;
-  var mongoDb = new Db('local', new MongoServer(host, 27017));
+
+  var mongoDb = new Db('local', new MongoServer(host, 27017, options));
   mongoDb.open(function (err, db) {
     if (err) {
       return done(err);
